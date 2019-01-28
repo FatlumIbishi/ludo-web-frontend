@@ -1,7 +1,10 @@
-const board = document.getElementById('board');
+var localURL = "https://localhost:5001/api/ludo/";
+var board = document.getElementById('boardDiv');
+var newDiv = document.getElementById('newDiv');
+var message = document.getElementById('errorMessage');
+var gameStarted = document.getElementById("showCode");
 
-document.getElementById('joinGame').onclick = function () {
-
+function joinGame() {
     str = document.getElementById("gamecode").value
     const p = document.createElement('p');
 
@@ -13,29 +16,117 @@ document.getElementById('joinGame').onclick = function () {
         var xmlhttp = new XMLHttpRequest();
         xmlhttp.onreadystatechange = function () {
 
-            data = JSON.parse(this.responseText);
+            data = JSON.stringify(this.responseText);
 
             if (this.readyState == 4 && this.status == 200) {
+                if (board.style.display === "none") {
+                    board.style.display = "block";
+                    newDiv.style.display = "none";
+                }
                 p.textContent = this.responseText;
                 board.appendChild(p);
+
             } else {
+                if (board.style.display === "none") {
+                    board.style.display = "block";
+                    newDiv.style.display = "none";
+                }
                 p.textContent = this.status;
                 board.appendChild(p);
             }
         };
-        xmlhttp.open("GET", "https://localhost:5001/api/ludo/" + str + "/getgamedetails/", true);
+        xmlhttp.open("GET", localURL + str + "/getgamedetails", true);
         xmlhttp.send();
     }
 
 }
 
-document.getElementById('newGame').onclick = function () {
+function createGame(gameURL) {
+    var result = null;
+    $.ajax({
+        type: "POST",
+        async: false,
+        url: localURL + gameURL,
+        dataType: "json",
+        success: function(data){
+            result = data;
+        }
+    });
+    return result;
+}
+  
+function newGame() {
 
-    var request = new XMLHttpRequest();
-    var requestURL = 'https://localhost:5001/api/ludo/createnewgame'
-    request.open('POST', requestURL, true);
+    var gameURL = "createnewgame";
+    var gameID = createGame(gameURL);
+  
+    var p1 = document.getElementById('player1').value;
+    var p2 = document.getElementById('player2').value;
+    var p3 = document.getElementById('player3').value;
+    var p4 = document.getElementById('player4').value;
 
-    request.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
+    if (p1 != "") {
+        $.ajax({
+            type: "POST",
+            async: true,
+            url: localURL + gameID + "/players/addplayer?name=" + p1 + "&colorID=1",
+            success: function(data){
+                console.log(data);
+            }
+        });
+    }
+    if (p2 != "") {
+        $.ajax({
+            type: "POST",
+            async: true,
+            url: localURL + gameID + "/players/addplayer?name=" + p2 + "&colorID=2",
+            success: function(data){
+                console.log(data);
+            }
+        });
+    }
+    if (p3 != "") {
+        $.ajax({
+            type: "POST",
+            async: true,
+            url: localURL + gameID + "/players/addplayer?name=" + p3 + "&colorID=3",
+            success: function(data){
+                console.log(data);
+            }
+        });
+    }
+    if (p4 != "") {
+        $.ajax({
+            type: "POST",
+            async: true,
+            url: localURL + gameID + "/players/addplayer?name=" + p4 + "&colorID=4",
+            success: function(data){
+                console.log(data);
+            }
+        });
+    }
 
-    request.send();
+    if (board.style.display === "none") {
+        board.style.display = "block";
+        newDiv.style.display = "none";
+    }
+
+    var positionMe = getPosition(gameID);
+
+    
+
+}
+
+function getPosition(gameURL) {
+    var result = null;
+    $.ajax({
+        type: "GET",
+        async: false,
+        url: localURL + gameURL + "/players/getplayers",
+        dataType: "json",
+        success: function(data){
+            result = data;
+        }
+    });
+    return result;
 }

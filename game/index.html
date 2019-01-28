@@ -64,17 +64,17 @@
 
   <section>
     <div class="container">
-      <div class="align-items-center">
+      <div id="newDiv" class="align-items-center">
         <div class="p-5 text-center m-auto">
-          <button onclick="startNewGame()" class="btn btn-secondary rounded-pill">New game</button>
-          <button class="btn btn-primary rounded-pill" onclick="joinExisting()">Join an existing game</button>
+          <button onclick="showNewGame()" class="btn btn-secondary rounded-pill">New game</button>
+          <button onclick="showJoin()" class="btn btn-primary rounded-pill">Join an existing game</button>
         </div>
         <div id="showCode" class="p-5 text-center m-auto" style="display:none;">
           <label>Code:</label>
           <input class="search rounded-pill" id="gamecode">
-          <button id="joinGame" class="btn btn-primary rounded-pill">Join</button>
+          <button onclick="joinGame()" class="btn btn-primary rounded-pill">Join</button>
         </div>
-        <div id="addPlayers" class="p-5 text-center m-auto" style="display:none;">
+        <div id="showPlayers" class="p-5 text-center m-auto" style="display:none;">
           <div class="player1">
             <span class="fa-stack fa-lg">
               <i class="fa fa-circle fa-stack-2x"></i>
@@ -111,10 +111,82 @@
             <input class="search rounded-pill" id="player4">
           </div>
           <br>
+          <div id="errorMessage"></div>
           <br>
-          <button id="letsPlay" class="btn btn-primary rounded-pill">Lets play!</button>
+          <button onclick="newGame()" class="btn btn-primary rounded-pill">Lets play!</button>
         </div>
-        <div id="board"></div>
+      </div>
+      <div id="boardDiv" class="p-5" style="display:none;">
+        <div class="grid-container">
+          <div class="C41">
+            <div class="player1">
+              <span class="fa-stack fa-lg">
+                <i class="fa fa-circle fa-stack-sm"></i>
+                <i class="fa fa-chess-pawn fa-stack-xs fa-inverse"></i>
+              </span>
+            </div>
+          </div>
+          <div class="C42"></div>
+          <div class="C43"></div>
+          <div class="C44"></div>
+          <div class="C11"></div>
+          <div class="C12"></div>
+          <div class="C13"></div>
+          <div class="C14"></div>
+          <div class="B1"></div>
+          <div class="B2"></div>
+          <div class="B3"></div>
+          <div class="B4"></div>
+          <div class="B5"></div>
+          <div class="B6"></div>
+          <div class="B7"></div>
+          <div class="B8"></div>
+          <div class="B9"></div>
+          <div class="B10"></div>
+          <div class="B11"></div>
+          <div class="B12"></div>
+          <div class="B13"></div>
+          <div class="B14"></div>
+          <div class="B15"></div>
+          <div class="B16"></div>
+          <div class="B17"></div>
+          <div class="B18"></div>
+          <div class="B19"></div>
+          <div class="B20"></div>
+          <div class="B21"></div>
+          <div class="B22"></div>
+          <div class="B23"></div>
+          <div class="B24"></div>
+          <div class="B25"></div>
+          <div class="B26"></div>
+          <div class="B27"></div>
+          <div class="B28"></div>
+          <div class="B29"></div>
+          <div class="B30"></div>
+          <div class="B31"></div>
+          <div class="B32"></div>
+          <div class="W11"></div>
+          <div class="W12"></div>
+          <div class="W13"></div>
+          <div class="WINNER"></div>
+          <div class="W21"></div>
+          <div class="W22"></div>
+          <div class="W23"></div>
+          <div class="W31"></div>
+          <div class="W32"></div>
+          <div class="W33"></div>
+          <div class="W41"></div>
+          <div class="W42"></div>
+          <div class="W43"></div>
+          <div class="C21"></div>
+          <div class="C22"></div>
+          <div class="C23"></div>
+          <div class="C23"></div>
+          <div class="C31"></div>
+          <div class="C32"></div>
+          <div class="C33"></div>
+          <div class="C34"></div>
+        </div>
       </div>
     </div>
   </section>
@@ -127,25 +199,26 @@
   </footer>
 
   <!-- Bootstrap core JavaScript -->
-  <script src="../vendor/jquery/jquery.min.js"></script>
+  <!-- <script src="../vendor/jquery/jquery.min.js"></script> -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
   <script src="../vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
   <script src="../api/script.js"></script>
 
   <script>
-    var joinG = document.getElementById("showCode");
-    var newG = document.getElementById("addPlayers");
+    var showJoinBox = document.getElementById("showCode");
+    var showNewGameBox = document.getElementById("showPlayers");
 
-    function joinExisting() {
-      if (joinG.style.display === "none") {
-        joinG.style.display = "block";
-        newG.style.display = "none";
+    function showJoin() {
+      if (showJoinBox.style.display === "none") {
+        showJoinBox.style.display = "block";
+        showNewGameBox.style.display = "none";
       }
     }
 
-    function startNewGame() {
-      if (newG.style.display === "none") {
-        newG.style.display = "block";
-        joinG.style.display = "none";
+    function showNewGame() {
+      if (showNewGameBox.style.display === "none") {
+        showNewGameBox.style.display = "block";
+        showJoinBox.style.display = "none";
       }
     }
   </script>
