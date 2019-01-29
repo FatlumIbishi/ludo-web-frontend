@@ -1,8 +1,11 @@
-var localURL = "https://localhost:5001/api/ludo/";
+var localURL = "https://ludogame.azurewebsites.net/api/ludo/";
 var board = document.getElementById('boardDiv');
 var newDiv = document.getElementById('newDiv');
 var message = document.getElementById('errorMessage');
 var gameStarted = document.getElementById("showCode");
+const setGameID = document.getElementById('gameCode');
+const rollNumber = document.getElementById('getRollNumber');
+const rollNumber2 = document.getElementById('getRollNumber2');
 
 function joinGame() {
     str = document.getElementById("gamecode").value
@@ -59,6 +62,11 @@ function newGame() {
 
     var gameURL = "createnewgame";
     var gameID = createGame(gameURL);
+
+
+    setGameID.textContent = gameID;
+
+    board.appendChild(setGameID);
   
     var p1 = document.getElementById('player1').value;
     var p2 = document.getElementById('player2').value;
@@ -111,14 +119,45 @@ function newGame() {
         newDiv.style.display = "none";
     }
 
-    var positionMe = getPosition(gameID);
+    startGame(gameID);
 
-    
+    getPosition(gameID);
 
+}
+
+function rollDice(gameURL) {
+    getPosition(gameURL);
+    var result = null;
+    $.ajax({
+        type: "GET",
+        async: false,
+        url: localURL + gameURL + "/rolldice",
+        dataType: "json",
+        success: function(data){
+            result = data;
+        }
+    });
+    rollNumber.textContent = result;
+    return board.appendChild(rollNumber);
+}
+
+function startGame(gameURL) {
+    var result = null;
+    $.ajax({
+        type: "PUT",
+        async: false,
+        url: localURL + gameURL + "/startgame",
+        dataType: "json",
+        success: function(data){
+            result = data;
+        }
+    });
+    return result;
 }
 
 function getPosition(gameURL) {
     var result = null;
+    var output = [];
     $.ajax({
         type: "GET",
         async: false,
@@ -128,5 +167,9 @@ function getPosition(gameURL) {
             result = data;
         }
     });
-    return result;
+    for (var i in result.playerId) {
+        output += data.playerId.name;
+    }
+    rollNumber2.textContent = output;
+    return board.appendChild(rollNumber2);;
 }
