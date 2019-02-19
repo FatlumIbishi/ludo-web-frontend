@@ -6,6 +6,14 @@ var gameStarted = document.getElementById("showCode");
 const setGameID = document.getElementById('gameCode');
 const rollNumber = document.getElementById('getRollNumber');
 const rollNumber2 = document.getElementById('getRollNumber2');
+const rollNumber3 = document.getElementById('getRollNumber3');
+
+var currentPlayer = null;
+var diceValue = null;
+var pieceValue = null;
+var oldPosition = null;
+var newPosition = null;
+
 
 function joinGame() {
     str = document.getElementById("gamecode").value
@@ -38,7 +46,7 @@ function joinGame() {
                 board.appendChild(p);
             }
         };
-        xmlhttp.open("GET", localURL + str + "/getgamedetails", true);
+        xmlhttp.open("GET", localURL + str + "/getgamedetails", false);
         xmlhttp.send();
     }
 
@@ -77,7 +85,7 @@ function newGame() {
         $.ajax({
             type: "POST",
             async: true,
-            url: localURL + gameID + "/players/addplayer?name=" + p1 + "&colorID=1",
+            url: localURL + gameID + "/players/addplayer?name=" + p1 + "&colorID=0",
             success: function(data){
                 console.log(data);
             }
@@ -87,7 +95,7 @@ function newGame() {
         $.ajax({
             type: "POST",
             async: true,
-            url: localURL + gameID + "/players/addplayer?name=" + p2 + "&colorID=2",
+            url: localURL + gameID + "/players/addplayer?name=" + p2 + "&colorID=1",
             success: function(data){
                 console.log(data);
             }
@@ -97,7 +105,7 @@ function newGame() {
         $.ajax({
             type: "POST",
             async: true,
-            url: localURL + gameID + "/players/addplayer?name=" + p3 + "&colorID=3",
+            url: localURL + gameID + "/players/addplayer?name=" + p3 + "&colorID=2",
             success: function(data){
                 console.log(data);
             }
@@ -107,7 +115,7 @@ function newGame() {
         $.ajax({
             type: "POST",
             async: true,
-            url: localURL + gameID + "/players/addplayer?name=" + p4 + "&colorID=4",
+            url: localURL + gameID + "/players/addplayer?name=" + p4 + "&colorID=3",
             success: function(data){
                 console.log(data);
             }
@@ -121,12 +129,11 @@ function newGame() {
 
     startGame(gameID);
 
-    getPosition(gameID);
-
+    //getPosition(gameID);
 }
 
 function rollDice(gameURL) {
-    getPosition(gameURL);
+    //getPosition(gameURL);
     var result = null;
     $.ajax({
         type: "GET",
@@ -137,6 +144,7 @@ function rollDice(gameURL) {
             result = data;
         }
     });
+    diceValue = result;
     rollNumber.textContent = result;
     return board.appendChild(rollNumber);
 }
@@ -161,15 +169,95 @@ function getPosition(gameURL) {
     $.ajax({
         type: "GET",
         async: false,
-        url: localURL + gameURL + "/players/getplayers",
+        url: localURL + gameURL + "/players/getallplayers",
         dataType: "json",
         success: function(data){
             result = data;
         }
     });
-    for (var i in result.playerId) {
-        output += data.playerId.name;
+    
+    var stringBuilder = null;
+    for(i = 0; i < result.length; i++){
+        stringBuilder = (result[i].name) + "'s [ ";
+        for(k = 0; k < 4; k++){
+            stringBuilder += "PieceID: " + result[i].pieces[k].pieceId  + " has position: " + result[i].pieces[k].position + " ]";
+        }
+        output.push(stringBuilder);
     }
+
     rollNumber2.textContent = output;
-    return board.appendChild(rollNumber2);;
+    
+    return board.appendChild(rollNumber2);
+}
+
+function movePiece(gameURL){
+
+    fetchPieceInfo(gameURL, pieceValue);
+
+    var thePiece = "." + currentPlayer + " ." + pieceValue;
+
+    var newP = ".B" + newPosition;
+    console.log(newP);
+    console.log(thePiece);
+
+    $(thePiece).parent().parent().detach().appendTo(newP);
+
+
+    $.ajax({
+        type: "PUT",
+        async: false,
+        url: localURL + gameURL + "/movepiece?" + "pieceId=" + pieceValue + "&numberOfFields=" + diceValue,
+        dataType: "json",
+        success: function(data){
+            console.log(data);
+        }
+    });
+}
+
+function endTurn(gameURL){
+    var result = null;
+    $.ajax({
+        type: "PUT",
+        async: false,
+        url: localURL + gameURL + "/endturn",
+        datatype: "json",
+        success: function(data){
+            console.log(data);
+        }
+    });
+}
+
+function fetchPieceInfo(gameURL, pieceVal){
+    var result = null;
+    pieceValue = pieceVal;
+    $.ajax({
+        type: "GET",
+        async: false,
+        url: localURL + gameURL + "/players/getallplayers",
+        dataType: "json",
+        success: function(data){
+            result = data;
+        }
+    });
+
+    found = false;
+    for(i = 0; i < result.length; i++){
+        for(k = 0; k < 4; k++){
+            if(result[i].pieces[k].pieceId == pieceValue && found == false)
+            {
+                oldPosition = result[i].offset + result[i].pieces[k].position;
+                newPosition = oldPosition + diceValue;
+                console.log("Old: " + oldPosition);
+                console.log("New: " + newPosition);
+                console.log("Dice: " + diceValue);
+                found = true;
+            }
+        }
+    }
+}
+
+function setPieceValue(gameUrl, playId, pieId){
+    currentPlayer = playId;
+    pieceValue = pieId;
+    movePiece(gameUrl);
 }
